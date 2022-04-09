@@ -11,21 +11,21 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.methods.generateAuthToken = function () {
-    return jwt.sign({_id: this._id, email: this.email}, process.env.JWTPRIVATEKEY, {
+    return jwt.sign({_id: this._id, email: this.email}, process.env.JWT_SECRET, {
         expiresIn: "7d",
     })
 }
 
 const User = mongoose.model("User", userSchema)
 
-const validate = (data) => {
+const validateUser = (user) => {
     const schema = Joi.object({
         firstName: Joi.string().required().label("First Name"),
         lastName: Joi.string().required().label("Last Name"),
         email: Joi.string().email().required().label("Email"),
         password: passwordComplexity().required().label("Password"),
     })
-    return schema.validate(data)
+    return schema.validate(user)
 }
 
-module.exports = {User, validate}
+module.exports = {User, validateUser}

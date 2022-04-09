@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt")
 const usersRouter = express.Router()
-const {User, validate} = require("../models/user")
+const {User, validateUser} = require("../models/user")
 
 usersRouter.get('/', (req, res) => {
     User.find({}, (err, users) => {
@@ -15,7 +15,7 @@ usersRouter.get('/', (req, res) => {
 
 usersRouter.post('/', async (req, res) => {
     try {
-        const {error} = validate(req.body)
+        const {error} = validateUser(req.body)
         if (error)
             return res.status(400).send({message: error.details[0].message})
 

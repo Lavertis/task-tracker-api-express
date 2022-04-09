@@ -9,7 +9,7 @@ const swaggerFile = require('./swagger_output.json')
 
 const usersRouter = require("./routes/users")
 const authRouter = require("./routes/auth")
-// const tasksRouter = require("./routes/tasks")
+const tasksRouter = require("./routes/tasks")
 
 const connection = require('./db')
 connection()
@@ -23,7 +23,7 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.use('/api/users', usersRouter)
 app.use('/api/auth', authRouter)
-// app.use('/api/tasks', productsRouter)
+app.use('/api/tasks', tasksRouter)
 
 app.listen(PORT, () =>
     console.log(`App listening on port ${PORT}!`),
