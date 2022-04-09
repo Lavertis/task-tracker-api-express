@@ -1,18 +1,16 @@
 const express = require('express');
 const tasksRouter = express.Router();
 const {Task, validateTask} = require('../models/task');
-const jwt = require("jsonwebtoken");
+const {getClaimFromToken} = require("../helpers");
 
-tasksRouter.get('/', async (req, res) => {
-    const tasks = await Task.find().sort('name');
+tasksRouter.get('/user', async (req, res) => {
+    let userId = getClaimFromToken(req, '_id');
+    const tasks = await Task.find({owner: userId});
     res.send(tasks);
 });
 
 tasksRouter.post('/', async (req, res) => {
-    let token = req.header('Authorization');
-    token = token.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded._id;
+    let userId = getClaimFromToken(req, '_id')
 
     const {error} = validateTask(req.body);
     if (error) return res.status(400).send({message: error.details[0].message});
@@ -25,6 +23,17 @@ tasksRouter.post('/', async (req, res) => {
     });
     task = await task.save();
 
+    res.send(task);
+});
+
+tasksRouter.delete('/:id', async (req, res) => {
+    const task = await Task.findById(req.params.id);
+    if (!task) return res.status(404).send({message: 'Task not found'});
+
+    let userId = getClaimFromToken(req, '_id')
+    if (task.owner.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
+    await task.remove();
+    
     res.send(task);
 });
 
