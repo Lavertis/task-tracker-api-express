@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node main.js",
+    "dev": "nodemon main.js",
+    "swagger-autogen": "node swagger.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,5 +21,8 @@
     "mongoose": "^6.2.10",
     "swagger-autogen": "^2.20.8",
     "swagger-ui-express": "^4.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }
