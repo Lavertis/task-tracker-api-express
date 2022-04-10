@@ -40,6 +40,7 @@ const validateTask = (task) => {
         title: Joi.string().min(3).max(50).required().label("Title"),
         description: Joi.string().min(3).max(50).required().label("Description"),
         dueDate: Joi.date().min("now").label("Due Date"),
+        completed: Joi.boolean().label("Completed"),
     });
 
     return schema.validate(task);
