@@ -13,6 +13,19 @@ usersRouter.get('/', (req, res) => {
     });
 });
 
+// search users where email like and limit to 5
+usersRouter.get('/search/:email', (req, res) => {
+    User.find({email: {$regex: req.params.email, $options: 'i'}}, (err, users) => {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log(users)
+            res.send(users)
+        }
+    }).limit(5)
+});
+
+
 usersRouter.post('/', async (req, res) => {
     try {
         const {error} = validateUser(req.body)
@@ -42,15 +55,5 @@ usersRouter.delete('/:id', (req, res) => {
         }
     })
 })
-
-// usersRouter.patch('/:id', (req, res) => {
-//     User.findByIdAndUpdate(req.params.id, req.body, {new: true}, (err, user) => {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             res.send(user)
-//         }
-//     })
-// })
 
 module.exports = usersRouter

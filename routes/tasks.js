@@ -2,6 +2,7 @@ const express = require('express');
 const tasksRouter = express.Router();
 const {Task, validateCreateTask, validateUpdateTask} = require('../models/task');
 const {getClaimFromToken} = require("../helpers");
+const {User} = require("../models/user");
 
 tasksRouter.get('/auth/all', async (req, res) => {
     let userId = getClaimFromToken(req, '_id');
@@ -25,11 +26,15 @@ tasksRouter.post('/', async (req, res) => {
     const {error} = validateCreateTask(req.body);
     if (error) return res.status(400).send({message: error.details[0].message});
 
+    // get user list by list of emails
+    const users = await User.find({email: {$in: req.body.assignedTo}});
+
     let task = new Task({
         title: req.body.title,
         description: req.body.description,
         dueDate: req.body.dueDate,
-        owner: userId
+        owner: userId,
+        assignedTo: users.map(user => user._id)
     });
     task = await task.save();
 
