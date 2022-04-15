@@ -2,11 +2,10 @@ const express = require('express');
 const tasksRouter = express.Router();
 const {Task, validateCreateTask, validateUpdateTask} = require('../models/task');
 const {getClaimFromToken} = require("../helpers");
-const {User} = require("../models/user");
 
 tasksRouter.get('/auth/all', async (req, res) => {
     let userId = getClaimFromToken(req, '_id');
-    const tasks = await Task.find({owner: userId}).sort({dueDate: -1});
+    const tasks = await Task.find({userId: userId}).sort({dueDate: -1});
     res.send(tasks);
 });
 
@@ -15,7 +14,7 @@ tasksRouter.get('/:id', async (req, res) => {
     if (!task) return res.status(404).send('The task with the given ID was not found.');
 
     let userId = getClaimFromToken(req, '_id')
-    if (task.owner.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
+    if (task.userId.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
 
     res.send(task);
 });
@@ -26,15 +25,11 @@ tasksRouter.post('/', async (req, res) => {
     const {error} = validateCreateTask(req.body);
     if (error) return res.status(400).send({message: error.details[0].message});
 
-    // get user list by list of emails
-    const users = await User.find({email: {$in: req.body.assignedTo}});
-
     let task = new Task({
         title: req.body.title,
         description: req.body.description,
         dueDate: req.body.dueDate,
-        owner: userId,
-        assignedTo: users.map(user => user._id)
+        userId: userId,
     });
     task = await task.save();
 
@@ -46,7 +41,7 @@ tasksRouter.delete('/:id', async (req, res) => {
     if (!task) return res.status(404).send({message: 'Task not found'});
 
     let userId = getClaimFromToken(req, '_id')
-    if (task.owner.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
+    if (task.userId.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
     await task.remove();
 
     res.send(task);
@@ -57,7 +52,7 @@ tasksRouter.put('/:id', async (req, res) => {
     if (!task) return res.status(404).send({message: 'Task not found'});
 
     let userId = getClaimFromToken(req, '_id')
-    if (task.owner.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
+    if (task.userId.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
 
     const {error} = validateUpdateTask(req.body);
     if (error) return res.status(400).send({message: error.details[0].message});

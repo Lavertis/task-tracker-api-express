@@ -20,15 +20,11 @@ const taskSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    owner: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
-    },
-    assignedTo: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }]
+    }
 }, {
     timestamps: true
 });
@@ -40,7 +36,6 @@ const validateCreateTask = (task) => {
         title: Joi.string().min(3).max(50).required().label("Title"),
         description: Joi.string().min(3).max(50).required().label("Description"),
         dueDate: Joi.date().min("now").label("Due Date"),
-        assignedTo: Joi.array().items(Joi.string().required().label("Assigned To User")).min(1).max(5).label("Assigned To Users")
     });
 
     return schema.validate(task);
