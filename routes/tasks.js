@@ -1,11 +1,11 @@
 const express = require('express');
 const tasksRouter = express.Router();
-const {Task, validateTask} = require('../models/task');
+const {Task, validateCreateTask, validateUpdateTask} = require('../models/task');
 const {getClaimFromToken} = require("../helpers");
 
-tasksRouter.get('/auth', async (req, res) => {
+tasksRouter.get('/auth/all', async (req, res) => {
     let userId = getClaimFromToken(req, '_id');
-    const tasks = await Task.find({owner: userId});
+    const tasks = await Task.find({owner: userId}).sort({dueDate: -1});
     res.send(tasks);
 });
 
@@ -22,7 +22,7 @@ tasksRouter.get('/:id', async (req, res) => {
 tasksRouter.post('/', async (req, res) => {
     let userId = getClaimFromToken(req, '_id')
 
-    const {error} = validateTask(req.body);
+    const {error} = validateCreateTask(req.body);
     if (error) return res.status(400).send({message: error.details[0].message});
 
     let task = new Task({
@@ -54,7 +54,7 @@ tasksRouter.put('/:id', async (req, res) => {
     let userId = getClaimFromToken(req, '_id')
     if (task.owner.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
 
-    const {error} = validateTask(req.body);
+    const {error} = validateUpdateTask(req.body);
     if (error) return res.status(400).send({message: error.details[0].message});
 
     task.title = req.body.title;
