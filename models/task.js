@@ -35,27 +35,27 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model('Task', taskSchema);
 
-const validateCreateTask = (task) => {
+const validateTaskCreate = (task) => {
     const schema = Joi.object({
         title: Joi.string().min(3).max(50).required().label("Title"),
         description: Joi.string().min(3).max(50).required().label("Description"),
         dueDate: Joi.date().min("now").label("Due Date"),
         priority: Joi.number().min(1).max(3).label("Priority")
-    });
+    }).unknown(true);
 
     return schema.validate(task);
 };
 
-const validateUpdateTask = (task) => {
+const validateTaskUpdate = (task) => {
     const schema = Joi.object({
         title: Joi.string().min(3).max(50).required().label("Title"),
         description: Joi.string().min(3).max(50).required().label("Description"),
         completed: Joi.boolean().label("Completed"),
         dueDate: Joi.date().label("Due Date"),
         priority: Joi.number().min(1).max(3).label("Priority")
-    });
+    }).unknown(true);
 
     return schema.validate(task);
 };
 
-module.exports = {Task, validateCreateTask, validateUpdateTask};
+module.exports = {Task, validateTaskCreate, validateTaskUpdate};
