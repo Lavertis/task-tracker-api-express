@@ -29,6 +29,7 @@ tasksRouter.post('/', async (req, res) => {
         title: req.body.title,
         description: req.body.description,
         dueDate: req.body.dueDate,
+        priority: req.body.priority,
         userId: userId,
     });
     task = await task.save();
@@ -61,6 +62,7 @@ tasksRouter.put('/:id', async (req, res) => {
     task.description = req.body.description;
     task.dueDate = req.body.dueDate;
     task.completed = req.body.completed;
+    task.priority = req.body.priority;
     task.save();
 
     res.send(task);
