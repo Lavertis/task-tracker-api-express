@@ -1,7 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcrypt")
 const usersRouter = express.Router()
-const {User, validateUser} = require("../models/user")
+const {User, validateUserUpdate, validateUserCreate} = require("../models/user")
+const {getClaimFromToken} = require("../helpers");
 
 usersRouter.get('/', (req, res) => {
     User.find({}, (err, users) => {
@@ -25,18 +26,18 @@ usersRouter.get('/:id', (req, res) => {
 
 usersRouter.post('/', async (req, res) => {
     try {
-        const {error} = validateUser(req.body)
+        const {error} = validateUserCreate(req.body)
         if (error) return res.status(400).send({message: error.details[0].message})
 
         const found = await User.findOne({email: req.body.email})
         if (found) return res.status(409).send({message: "User with this email already exists"})
 
         const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS))
-        const hashPassword = await bcrypt.hash(req.body.password, salt)
+        const passwordHash = await bcrypt.hash(req.body.password, salt)
 
         const user = new User({
             ...req.body,
-            password: hashPassword
+            password: passwordHash
         })
         await user.save()
         res.status(201).send(user)
@@ -44,6 +45,32 @@ usersRouter.post('/', async (req, res) => {
         res.status(500).send({message: "Internal server error"})
     }
 })
+
+usersRouter.patch('/', async (req, res) => {
+    let userId = getClaimFromToken(req, '_id')
+
+    const {error} = validateUserUpdate(req.body);
+    if (error) return res.status(400).send({message: error.details[0].message});
+
+    let user = await User.findOne({_id: userId})
+    if (!user) return res.status(404).send({message: "User not found"})
+    console.log(user)
+
+    if (req.body.email && req.body.email !== user.email) {
+        const found = await User.findOne({email: req.body.email})
+        if (found) return res.status(409).send({message: "User with this email already exists"})
+        user.email = req.body.email;
+    }
+    if (req.body.firstName) user.firstName = req.body.firstName;
+    if (req.body.lastName) user.lastName = req.body.lastName;
+    if (req.body.password) {
+        const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS))
+        user.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    user.save();
+    res.send(user);
+});
 
 usersRouter.delete('/:id', (req, res) => {
     User.findByIdAndDelete(req.params.id, (err, user) => {

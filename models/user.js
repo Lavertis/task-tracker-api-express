@@ -18,14 +18,24 @@ userSchema.methods.generateAuthToken = function () {
 
 const User = mongoose.model("User", userSchema)
 
-const validateUser = (user) => {
+const validateUserCreate = (user) => {
     const schema = Joi.object({
-        firstName: Joi.string().required().label("First Name"),
-        lastName: Joi.string().required().label("Last Name"),
         email: Joi.string().email().required().label("Email"),
+        firstName: Joi.string().required().min(2).label("First Name"),
+        lastName: Joi.string().required().min(2).label("Last Name"),
         password: passwordComplexity().required().label("Password"),
     })
     return schema.validate(user)
 }
 
-module.exports = {User, validateUser}
+const validateUserUpdate = (user) => {
+    const schema = Joi.object({
+        email: Joi.string().allow('', null).email().label("Email"),
+        firstName: Joi.string().allow('', null).min(2).label("First Name"),
+        lastName: Joi.string().allow('', null).min(2).label("Last Name"),
+        password: passwordComplexity().allow('', null).label("Password"),
+    }).unknown(true)
+    return schema.validate(user)
+}
+
+module.exports = {User, validateUserCreate, validateUserUpdate}
