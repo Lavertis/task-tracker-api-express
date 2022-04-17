@@ -13,6 +13,16 @@ usersRouter.get('/', (req, res) => {
     });
 });
 
+usersRouter.get('/:id', (req, res) => {
+    User.findById(req.params.id, (err, user) => {
+        if (err) {
+            console.log(err)
+        } else {
+            res.send(user)
+        }
+    });
+});
+
 usersRouter.post('/', async (req, res) => {
     try {
         const {error} = validateUser(req.body)
