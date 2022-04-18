@@ -5,7 +5,28 @@ const {getClaimFromToken} = require("../helpers");
 
 tasksRouter.get('/auth/all', async (req, res) => {
     let userId = getClaimFromToken(req, '_id');
-    const tasks = await Task.find({userId: userId}).sort({dueDate: -1});
+
+    let page = req.query.page;
+    let limit = req.query.limit;
+    if (!page || !limit) {
+        const tasks = await Task.find({userId: userId}).sort({dueDate: -1});
+        res.send(tasks);
+    }
+
+    let count = await Task.countDocuments({userId: userId});
+    const tasks = await Task
+        .find({userId: userId})
+        .sort({dueDate: -1})
+        .skip(limit * (page - 1))
+        .limit(limit);
+
+    res.send({tasks: tasks, totalCount: count});
+});
+
+// get all tasks for authenticated user 5 per page
+tasksRouter.get('/auth/all/:page', async (req, res) => {
+    let userId = getClaimFromToken(req, '_id');
+    const tasks = await Task.find({userId: userId}).sort({dueDate: -1}).skip(5 * (req.params.page - 1)).limit(5);
     res.send(tasks);
 });
 
