@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt")
 const usersRouter = express.Router()
 const {User, validateUserUpdate, validateUserCreate} = require("../models/user")
-const {getClaimFromToken} = require("../helpers");
+const authenticated = require("../middleware/authenticated");
 
 usersRouter.get('/', (req, res) => {
     User.find({}, (err, users) => {
@@ -46,15 +46,14 @@ usersRouter.post('/', async (req, res) => {
     }
 })
 
-usersRouter.patch('/', async (req, res) => {
-    let userId = getClaimFromToken(req, '_id')
+usersRouter.patch('/', authenticated, async (req, res) => {
+    const userId = req.userId
 
     const {error} = validateUserUpdate(req.body);
     if (error) return res.status(400).send({message: error.details[0].message});
 
     let user = await User.findOne({_id: userId})
     if (!user) return res.status(404).send({message: "User not found"})
-    console.log(user)
 
     if (req.body.email && req.body.email !== user.email) {
         const found = await User.findOne({email: req.body.email})
@@ -72,14 +71,15 @@ usersRouter.patch('/', async (req, res) => {
     res.send(user);
 });
 
-usersRouter.delete('/:id', (req, res) => {
-    User.findByIdAndDelete(req.params.id, (err, user) => {
+usersRouter.delete('/', authenticated, (req, res) => {
+    const userId = req.userId
+    User.findByIdAndDelete(userId, (err, user) => {
         if (err) {
             console.log(err)
         } else {
             res.send(user)
         }
-    })
+    });
 })
 
 module.exports = usersRouter

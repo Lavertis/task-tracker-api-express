@@ -1,10 +1,10 @@
 const express = require('express');
 const tasksRouter = express.Router();
 const {Task, validateTaskCreate, validateTaskUpdate} = require('../models/task');
-const {getClaimFromToken} = require("../helpers");
+const authenticated = require("../middleware/authenticated");
 
-tasksRouter.get('/auth/all', async (req, res) => {
-    let userId = getClaimFromToken(req, '_id');
+tasksRouter.get('/auth/all', authenticated, async (req, res) => {
+    const userId = req.userId;
 
     let page = req.query.page;
     let limit = req.query.limit;
@@ -23,25 +23,19 @@ tasksRouter.get('/auth/all', async (req, res) => {
     res.send({tasks: tasks, totalCount: count});
 });
 
-// get all tasks for authenticated user 5 per page
-tasksRouter.get('/auth/all/:page', async (req, res) => {
-    let userId = getClaimFromToken(req, '_id');
-    const tasks = await Task.find({userId: userId}).sort({dueDate: -1}).skip(5 * (req.params.page - 1)).limit(5);
-    res.send(tasks);
-});
-
-tasksRouter.get('/:id', async (req, res) => {
+tasksRouter.get('/:id', authenticated, async (req, res) => {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send('The task with the given ID was not found.');
 
-    let userId = getClaimFromToken(req, '_id')
+    const userId = req.userId;
     if (task.userId.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
 
     res.send(task);
 });
 
-tasksRouter.post('/', async (req, res) => {
-    let userId = getClaimFromToken(req, '_id')
+tasksRouter.post('/', authenticated, async (req, res) => {
+    const userId = req.userId;
+
     let task = new Task({
         title: req.body.title,
         description: req.body.description,
@@ -57,11 +51,11 @@ tasksRouter.post('/', async (req, res) => {
     res.send(task);
 });
 
-tasksRouter.put('/:id', async (req, res) => {
+tasksRouter.put('/:id', authenticated, async (req, res) => {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send({message: 'Task not found'});
 
-    let userId = getClaimFromToken(req, '_id')
+    const userId = req.userId;
     if (task.userId.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
 
     task.title = req.body.title;
@@ -77,11 +71,11 @@ tasksRouter.put('/:id', async (req, res) => {
     res.send(task);
 });
 
-tasksRouter.patch('/:id', async (req, res) => {
+tasksRouter.patch('/:id', authenticated, async (req, res) => {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send({message: 'Task not found'});
 
-    let userId = getClaimFromToken(req, '_id')
+    const userId = req.userId;
     if (task.userId.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
 
     if (req.body.hasOwnProperty('title')) task.title = req.body.title;
@@ -97,11 +91,11 @@ tasksRouter.patch('/:id', async (req, res) => {
     res.send(task);
 });
 
-tasksRouter.delete('/:id', async (req, res) => {
+tasksRouter.delete('/:id', authenticated, async (req, res) => {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send({message: 'Task not found'});
 
-    let userId = getClaimFromToken(req, '_id')
+    const userId = req.userId;
     if (task.userId.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
 
     await task.remove();
