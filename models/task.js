@@ -37,8 +37,8 @@ const Task = mongoose.model('Task', taskSchema);
 
 const validateTaskCreate = (task) => {
     const schema = Joi.object({
-        title: Joi.string().min(3).max(50).required().label("Title"),
-        description: Joi.string().min(3).max(50).required().label("Description"),
+        title: Joi.string().min(3).max(20).required().label("Title"),
+        description: Joi.string().min(3).max(120).required().label("Description"),
         dueDate: Joi.date().min("now").required().label("Due Date"),
         priority: Joi.number().min(1).max(3).required().label("Priority")
     }).unknown(true);
@@ -48,8 +48,8 @@ const validateTaskCreate = (task) => {
 
 const validateTaskUpdate = (task) => {
     const schema = Joi.object({
-        title: Joi.string().min(3).max(50).required().label("Title"),
-        description: Joi.string().min(3).max(50).required().label("Description"),
+        title: Joi.string().min(3).max(20).required().label("Title"),
+        description: Joi.string().min(3).max(120).required().label("Description"),
         completed: Joi.boolean().required().label("Completed"),
         dueDate: Joi.date().required().label("Due Date"),
         priority: Joi.number().min(1).max(3).required().label("Priority")
