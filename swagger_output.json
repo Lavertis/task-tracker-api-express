@@ -350,10 +350,10 @@
                 "description": {
                   "example": "any"
                 },
-                "dueDate": {
+                "priority": {
                   "example": "any"
                 },
-                "priority": {
+                "dueDate": {
                   "example": "any"
                 }
               }

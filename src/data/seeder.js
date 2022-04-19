@@ -11,7 +11,7 @@ const getRandomPriority = () => {
 }
 
 const getRandomDate = () => {
-    const start = new Date(2022, 2, 1)
+    const start = new Date(2022, 3, 15)
     const end = new Date(2022, 6, 1)
     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
 }

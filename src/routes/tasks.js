@@ -9,14 +9,14 @@ tasksRouter.get('/auth/all', authenticated, async (req, res) => {
     let page = req.query.page;
     let limit = req.query.limit;
     if (!page || !limit) {
-        const tasks = await Task.find({userId: userId}).sort({dueDate: -1});
+        const tasks = await Task.find({userId: userId}).sort({dueDate: 1});
         res.send(tasks);
     }
 
     let count = await Task.countDocuments({userId: userId});
     const tasks = await Task
         .find({userId: userId})
-        .sort({dueDate: -1})
+        .sort({dueDate: 1})
         .skip(limit * (page - 1))
         .limit(limit);
 
