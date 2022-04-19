@@ -7,11 +7,11 @@ const cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger_output.json')
 
-const usersRouter = require("./routes/users")
-const authRouter = require("./routes/auth")
-const tasksRouter = require("./routes/tasks")
+const usersRouter = require("./src/routes/users")
+const authRouter = require("./src/routes/auth")
+const tasksRouter = require("./src/routes/tasks")
 
-const connection = require('./db')
+const connection = require('./src/data/db')
 connection()
 
 const app = express();
