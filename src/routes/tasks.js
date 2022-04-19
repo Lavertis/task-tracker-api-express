@@ -39,8 +39,8 @@ tasksRouter.post('/', authenticated, async (req, res) => {
     let task = new Task({
         title: req.body.title,
         description: req.body.description,
-        dueDate: req.body.dueDate,
         priority: req.body.priority,
+        dueDate: req.body.dueDate,
         userId: userId,
     });
 
