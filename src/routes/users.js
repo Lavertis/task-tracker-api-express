@@ -5,6 +5,7 @@ const {User, validateUserUpdate, validateUserCreate} = require("../models/user")
 const authenticated = require("../middleware/authenticated");
 
 usersRouter.get('/', (req, res) => {
+    // #swagger.tags = ["users"]
     User.find({}, (err, users) => {
         if (err) {
             console.log(err)
@@ -15,6 +16,7 @@ usersRouter.get('/', (req, res) => {
 });
 
 usersRouter.get('/:id', authenticated, (req, res) => {
+    // #swagger.tags = ["users"]
     const userId = req.userId
     if (userId !== req.params.id) {
         res.status(403).send("You are not allowed to see this user")
@@ -30,6 +32,7 @@ usersRouter.get('/:id', authenticated, (req, res) => {
 });
 
 usersRouter.post('/', async (req, res) => {
+    // #swagger.tags = ["users"]
     try {
         const {error} = validateUserCreate(req.body)
         if (error) return res.status(400).send({message: error.details[0].message})
@@ -52,6 +55,7 @@ usersRouter.post('/', async (req, res) => {
 })
 
 usersRouter.patch('/', authenticated, async (req, res) => {
+    // #swagger.tags = ["users"]
     const userId = req.userId
 
     const {error} = validateUserUpdate(req.body);
@@ -77,6 +81,7 @@ usersRouter.patch('/', authenticated, async (req, res) => {
 });
 
 usersRouter.delete('/', authenticated, (req, res) => {
+    // #swagger.tags = ["users"]
     const userId = req.userId
     User.findByIdAndDelete(userId, (err, user) => {
         if (err) {

@@ -1,18 +1,28 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0",
-    "title": "REST API",
-    "description": ""
+    "title": "Task Tracker API",
+    "description": "Task Tracker API documentation",
+    "version": "1.0.0"
   },
   "host": "localhost:5000",
   "basePath": "/",
   "schemes": [
     "http"
   ],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "paths": {
     "/api/users/": {
       "get": {
+        "tags": [
+          "users"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -22,6 +32,9 @@
         }
       },
       "post": {
+        "tags": [
+          "users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -56,6 +69,9 @@
         }
       },
       "patch": {
+        "tags": [
+          "users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -96,9 +112,17 @@
           "409": {
             "description": "Conflict"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "delete": {
+        "tags": [
+          "users"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -108,11 +132,19 @@
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/users/{id}": {
       "get": {
+        "tags": [
+          "users"
+        ],
         "description": "",
         "parameters": [
           {
@@ -132,11 +164,19 @@
           "403": {
             "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/auth/": {
       "post": {
+        "tags": [
+          "auth"
+        ],
         "description": "",
         "parameters": [
           {
@@ -173,6 +213,9 @@
     },
     "/api/tasks/auth/all": {
       "get": {
+        "tags": [
+          "tasks"
+        ],
         "description": "",
         "parameters": [
           {
@@ -198,11 +241,19 @@
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/tasks/{id}": {
       "get": {
+        "tags": [
+          "tasks"
+        ],
         "description": "",
         "parameters": [
           {
@@ -222,9 +273,17 @@
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "put": {
+        "tags": [
+          "tasks"
+        ],
         "description": "",
         "parameters": [
           {
@@ -271,9 +330,17 @@
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "patch": {
+        "tags": [
+          "tasks"
+        ],
         "description": "",
         "parameters": [
           {
@@ -320,9 +387,17 @@
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "delete": {
+        "tags": [
+          "tasks"
+        ],
         "description": "",
         "parameters": [
           {
@@ -342,11 +417,19 @@
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/tasks/": {
       "post": {
+        "tags": [
+          "tasks"
+        ],
         "description": "",
         "parameters": [
           {
@@ -381,7 +464,12 @@
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   }

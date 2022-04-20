@@ -4,13 +4,14 @@ const {Task, validateTaskCreate, validateTaskUpdate} = require('../models/task')
 const authenticated = require("../middleware/authenticated");
 
 tasksRouter.get('/auth/all', authenticated, async (req, res) => {
+    // #swagger.tags = ["tasks"]
     const userId = req.userId;
 
     let page = req.query.page;
     let limit = req.query.limit;
     if (!page || !limit) {
         const tasks = await Task.find({userId: userId}).sort({dueDate: 1});
-        res.send(tasks);
+        return res.send(tasks);
     }
 
     const hideCompleted = req.query.hideCompleted;
@@ -21,7 +22,7 @@ tasksRouter.get('/auth/all', authenticated, async (req, res) => {
             .sort({dueDate: 1})
             .skip(limit * (page - 1))
             .limit(limit);
-        res.send({tasks: tasks, totalCount: count});
+        return res.send({tasks: tasks, totalCount: count});
     } else {
         const count = await Task.countDocuments({userId: userId});
         const tasks = await Task
@@ -29,11 +30,12 @@ tasksRouter.get('/auth/all', authenticated, async (req, res) => {
             .sort({dueDate: 1})
             .skip(limit * (page - 1))
             .limit(limit);
-        res.send({tasks: tasks, totalCount: count});
+        return res.send({tasks: tasks, totalCount: count});
     }
 });
 
 tasksRouter.get('/:id', authenticated, async (req, res) => {
+    // #swagger.tags = ["tasks"]
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send('The task with the given ID was not found.');
 
@@ -44,6 +46,7 @@ tasksRouter.get('/:id', authenticated, async (req, res) => {
 });
 
 tasksRouter.post('/', authenticated, async (req, res) => {
+    // #swagger.tags = ["tasks"]
     const userId = req.userId;
 
     let task = new Task({
@@ -62,6 +65,7 @@ tasksRouter.post('/', authenticated, async (req, res) => {
 });
 
 tasksRouter.put('/:id', authenticated, async (req, res) => {
+    // #swagger.tags = ["tasks"]
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send({message: 'Task not found'});
 
@@ -82,6 +86,7 @@ tasksRouter.put('/:id', authenticated, async (req, res) => {
 });
 
 tasksRouter.patch('/:id', authenticated, async (req, res) => {
+    // #swagger.tags = ["tasks"]
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send({message: 'Task not found'});
 
@@ -102,6 +107,7 @@ tasksRouter.patch('/:id', authenticated, async (req, res) => {
 });
 
 tasksRouter.delete('/:id', authenticated, async (req, res) => {
+    // #swagger.tags = ["tasks"]
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).send({message: 'Task not found'});
 

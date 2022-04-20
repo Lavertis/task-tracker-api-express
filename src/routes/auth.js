@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt")
 const Joi = require("joi")
 
 authRouter.post("/", async (req, res) => {
+    // #swagger.tags = ["auth"]
     try {
         const {error} = validate(req.body);
         if (error)
