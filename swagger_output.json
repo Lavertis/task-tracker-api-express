@@ -184,6 +184,11 @@
             "name": "limit",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "hideCompleted",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {

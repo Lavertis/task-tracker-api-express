@@ -20,7 +20,7 @@ const seed = async () => {
     connection()
     const userId = '6259f8ae9758bca5ee923131'
     let tasks = []
-    for (let i = 1; i <= 43; i++) {
+    for (let i = 1; i <= 63; i++) {
         tasks.push({
             title: `Task ${i}`,
             description: `Task ${i} description`,

@@ -13,14 +13,24 @@ tasksRouter.get('/auth/all', authenticated, async (req, res) => {
         res.send(tasks);
     }
 
-    let count = await Task.countDocuments({userId: userId});
-    const tasks = await Task
-        .find({userId: userId})
-        .sort({dueDate: 1})
-        .skip(limit * (page - 1))
-        .limit(limit);
-
-    res.send({tasks: tasks, totalCount: count});
+    const hideCompleted = req.query.hideCompleted;
+    if (hideCompleted === 'true') {
+        const count = await Task.countDocuments({userId: userId, completed: !hideCompleted});
+        const tasks = await Task
+            .find({userId: userId, completed: !hideCompleted})
+            .sort({dueDate: 1})
+            .skip(limit * (page - 1))
+            .limit(limit);
+        res.send({tasks: tasks, totalCount: count});
+    } else {
+        const count = await Task.countDocuments({userId: userId});
+        const tasks = await Task
+            .find({userId: userId})
+            .sort({dueDate: 1})
+            .skip(limit * (page - 1))
+            .limit(limit);
+        res.send({tasks: tasks, totalCount: count});
+    }
 });
 
 tasksRouter.get('/:id', authenticated, async (req, res) => {
