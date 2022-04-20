@@ -14,14 +14,19 @@ usersRouter.get('/', (req, res) => {
     });
 });
 
-usersRouter.get('/:id', (req, res) => {
-    User.findById(req.params.id, (err, user) => {
-        if (err) {
-            console.log(err)
-        } else {
-            res.send(user)
-        }
-    });
+usersRouter.get('/:id', authenticated, (req, res) => {
+    const userId = req.userId
+    if (userId !== req.params.id) {
+        res.status(403).send("You are not allowed to see this user")
+    } else {
+        User.findById(req.params.id, (err, user) => {
+            if (err) {
+                console.log(err)
+            } else {
+                res.send(user)
+            }
+        });
+    }
 });
 
 usersRouter.post('/', async (req, res) => {
