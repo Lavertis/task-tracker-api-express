@@ -15,20 +15,16 @@ usersRouter.get('/', (req, res) => {
     });
 });
 
-usersRouter.get('/:id', authenticated, (req, res) => {
+usersRouter.get('/auth', authenticated, (req, res) => {
     // #swagger.tags = ["users"]
     const userId = req.userId
-    if (userId !== req.params.id) {
-        res.status(403).send("You are not allowed to see this user")
-    } else {
-        User.findById(req.params.id, (err, user) => {
-            if (err) {
-                console.log(err)
-            } else {
-                res.send(user)
-            }
-        });
-    }
+    User.findById(userId, (err, user) => {
+        if (err) {
+            console.log(err)
+        } else {
+            res.send(user)
+        }
+    });
 });
 
 usersRouter.post('/', async (req, res) => {
