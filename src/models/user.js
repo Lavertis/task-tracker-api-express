@@ -21,20 +21,22 @@ const User = mongoose.model("User", userSchema)
 const validateUserCreate = (user) => {
     const schema = Joi.object({
         email: Joi.string().email().required().label("Email"),
-        firstName: Joi.string().required().min(2).label("First Name"),
-        lastName: Joi.string().required().min(2).label("Last Name"),
         password: passwordComplexity().required().label("Password"),
-    })
+        firstName: Joi.string().required().min(2).max(50).label('First name'),
+        lastName: Joi.string().required().min(2).max(50).label('Last name')
+    }).unknown(true)
+
     return schema.validate(user)
 }
 
 const validateUserUpdate = (user) => {
     const schema = Joi.object({
-        email: Joi.string().allow('', null).email().label("Email"),
-        firstName: Joi.string().allow('', null).min(2).label("First Name"),
-        lastName: Joi.string().allow('', null).min(2).label("Last Name"),
-        password: passwordComplexity().allow('', null).label("Password"),
+        email: Joi.string().allow('', null).email().required().label("Email"),
+        password: passwordComplexity().allow('', null).required().label("Password"),
+        firstName: Joi.string().allow('', null).required().min(2).max(50).label('First name'),
+        lastName: Joi.string().allow('', null).required().min(2).max(50).label('Last name')
     }).unknown(true)
+
     return schema.validate(user)
 }
 

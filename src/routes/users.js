@@ -60,7 +60,10 @@ usersRouter.patch('/', authenticated, async (req, res) => {
     let user = await User.findOne({_id: userId})
     if (!user) return res.status(404).send({message: "User not found"})
 
-    if (req.body.email && req.body.email !== user.email) {
+    if (req.body.email && req.body.email === user.email)
+        return res.status(400).send({message: "That email is your current email"})
+
+    if (req.body.email) {
         const found = await User.findOne({email: req.body.email})
         if (found) return res.status(409).send({message: "User with this email already exists"})
         user.email = req.body.email;

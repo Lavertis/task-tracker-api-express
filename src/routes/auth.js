@@ -14,15 +14,12 @@ authRouter.post("/", async (req, res) => {
         if (!user)
             return res.status(401).send({message: "User with this email does not exist"})
 
-        const validPassword = await bcrypt.compare(
-            req.body.password,
-            user.password
-        )
+        const validPassword = await bcrypt.compare(req.body.password, user.password)
         if (!validPassword)
             return res.status(401).send({message: "Wrong password"})
 
-        const token = user.generateAuthToken();
-        res.status(200).send({data: token, message: "Successfully logged in"})
+        const jwtToken = user.generateAuthToken();
+        res.status(200).send({jwtToken: jwtToken, message: "Successfully logged in"})
     } catch (error) {
         res.status(500).send({message: "Internal server error"})
     }

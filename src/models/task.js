@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Joi = require("joi")
+const moment = require("moment");
 
 const taskSchema = new mongoose.Schema({
     title: {
@@ -9,7 +10,7 @@ const taskSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
+        required: false,
         trim: true
     },
     completed: {
@@ -37,10 +38,10 @@ const Task = mongoose.model('Task', taskSchema);
 
 const validateTaskCreate = (task) => {
     const schema = Joi.object({
-        title: Joi.string().min(3).max(20).required().label("Title"),
-        description: Joi.string().min(3).max(120).required().label("Description"),
-        dueDate: Joi.date().min("now").required().label("Due Date"),
-        priority: Joi.number().min(1).max(3).required().label("Priority")
+        title: Joi.string().required().min(3).max(50).label('Title'),
+        description: Joi.string().allow('', null).max(120).label('Description'),
+        priority: Joi.number().required().min(1).max(3).label('Priority'),
+        dueDate: Joi.date().required().min(moment().format("YYYY-MM-DD HH:mm")).label('Due date')
     }).unknown(true);
 
     return schema.validate(task);
@@ -48,11 +49,11 @@ const validateTaskCreate = (task) => {
 
 const validateTaskUpdate = (task) => {
     const schema = Joi.object({
-        title: Joi.string().min(3).max(20).required().label("Title"),
-        description: Joi.string().min(3).max(120).required().label("Description"),
-        completed: Joi.boolean().required().label("Completed"),
-        dueDate: Joi.date().required().label("Due Date"),
-        priority: Joi.number().min(1).max(3).required().label("Priority")
+        title: Joi.string().required().min(3).max(50).label('Title'),
+        description: Joi.string().allow('', null).max(120).label('Description'),
+        completed: Joi.boolean().required().label('Completed'),
+        priority: Joi.number().required().min(1).max(3).label('Priority'),
+        dueDate: Joi.date().required().label("Due Date")
     }).unknown(true);
 
     return schema.validate(task);
