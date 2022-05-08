@@ -47,7 +47,7 @@ tasksRouter.get('/auth/all', authenticated, async (req, res) => {
 tasksRouter.get('/:id', authenticated, async (req, res) => {
     // #swagger.tags = ["tasks"]
     const task = await Task.findById(req.params.id);
-    if (!task) return res.status(404).send('The task with the given ID was not found.');
+    if (!task) return res.status(404).send({message: 'Task not found'});
 
     const userId = req.userId;
     if (task.userId.toString() !== userId) return res.status(401).send({message: 'Unauthorized'});
@@ -67,8 +67,8 @@ tasksRouter.post('/', authenticated, async (req, res) => {
         userId: userId,
     });
 
-    const {error} = validateTaskCreate(task);
-    if (error) return res.status(400).send({message: error.details[0].message});
+    const {errors} = validateTaskCreate(task);
+    if (errors) return res.status(400).send({errors: errors.details});
 
     task = await task.save();
     res.send(task);
@@ -88,8 +88,8 @@ tasksRouter.put('/:id', authenticated, async (req, res) => {
     task.completed = req.body.completed;
     task.priority = req.body.priority;
 
-    const {error} = validateTaskUpdate(task);
-    if (error) return res.status(400).send({message: error.details[0].message});
+    const {errors} = validateTaskUpdate(task);
+    if (errors) return res.status(400).send({errors: errors.details});
 
     task.save();
     res.send(task);
@@ -109,8 +109,8 @@ tasksRouter.patch('/:id', authenticated, async (req, res) => {
     if (req.body.hasOwnProperty('completed')) task.completed = req.body.completed;
     if (req.body.hasOwnProperty('priority')) task.priority = req.body.priority;
 
-    const {error} = validateTaskUpdate(task);
-    if (error) return res.status(400).send({message: error.details[0].message});
+    const {errors} = validateTaskUpdate(task);
+    if (errors) return res.status(400).send({errors: errors.details});
 
     task.save();
     res.send(task);

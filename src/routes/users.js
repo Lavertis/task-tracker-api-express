@@ -31,10 +31,15 @@ usersRouter.post('/', async (req, res) => {
     // #swagger.tags = ["users"]
     try {
         const {error} = validateUserCreate(req.body)
-        if (error) return res.status(400).send({message: error.details[0].message})
+        if (error) return res.status(400).send({errors: error.details})
 
         const found = await User.findOne({email: req.body.email})
-        if (found) return res.status(409).send({message: "User with this email already exists"})
+        if (found) return res.status(409).send({
+            errors: [{
+                context: {label: "Email"},
+                message: "User with this email already exists"
+            }]
+        })
 
         const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS))
         const passwordHash = await bcrypt.hash(req.body.password, salt)
@@ -55,17 +60,27 @@ usersRouter.patch('/', authenticated, async (req, res) => {
     const userId = req.userId
 
     const {error} = validateUserUpdate(req.body);
-    if (error) return res.status(400).send({message: error.details[0].message});
+    if (error) return res.status(400).send({errors: error.details});
 
     let user = await User.findOne({_id: userId})
     if (!user) return res.status(404).send({message: "User not found"})
 
     if (req.body.email && req.body.email === user.email)
-        return res.status(400).send({message: "That email is your current email"})
+        return res.status(400).send({
+            errors: [{
+                context: {label: "Email"},
+                message: "That email is your current email"
+            }]
+        })
 
     if (req.body.email) {
         const found = await User.findOne({email: req.body.email})
-        if (found) return res.status(409).send({message: "User with this email already exists"})
+        if (found) return res.status(409).send({
+            errors: [{
+                context: {label: "Email"},
+                message: "User with this email already exists"
+            }]
+        })
         user.email = req.body.email;
     }
     if (req.body.firstName) user.firstName = req.body.firstName;

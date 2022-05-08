@@ -6,17 +6,27 @@ const Joi = require("joi")
 authRouter.post("/", async (req, res) => {
     // #swagger.tags = ["auth"]
     try {
-        const {error} = validate(req.body);
-        if (error)
-            return res.status(400).send({message: error.details[0].message})
+        const {errors} = validate(req.body);
+        if (errors)
+            return res.status(400).send({errors: errors.details})
 
         const user = await User.findOne({email: req.body.email})
         if (!user)
-            return res.status(401).send({message: "User with this email does not exist"})
+            return res.status(401).send({
+                errors: [{
+                    context: {label: "Email"},
+                    message: "User with this email does not exist"
+                }]
+            })
 
         const validPassword = await bcrypt.compare(req.body.password, user.password)
         if (!validPassword)
-            return res.status(401).send({message: "Wrong password"})
+            return res.status(401).send({
+                errors: [{
+                    context: {label: "Password"},
+                    message: "Wrong password"
+                }]
+            })
 
         const jwtToken = user.generateAuthToken();
         res.status(200).send({jwtToken: jwtToken, message: "Successfully logged in"})
