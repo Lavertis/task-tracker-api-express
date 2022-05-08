@@ -10,23 +10,33 @@ tasksRouter.get('/auth/all', authenticated, async (req, res) => {
     let rangeStart = req.query.rangeStart;
     let rangeEnd = req.query.rangeEnd;
     if (!rangeStart || !rangeEnd) {
-        const tasks = await Task.find({userId: userId}).sort({dueDate: 1});
+        const tasks = await Task.find({
+            userId: userId,
+            title: {$regex: req.query.searchTitle, $options: 'i'}
+        }).sort({dueDate: 1});
         return res.send(tasks);
     }
 
     const hideCompleted = req.query.hideCompleted;
     if (hideCompleted === 'true') {
-        const count = await Task.countDocuments({userId: userId, completed: !hideCompleted});
+        const count = await Task.countDocuments({
+            userId: userId,
+            completed: !hideCompleted,
+            title: {$regex: req.query.searchTitle, $options: 'i'}
+        });
         const tasks = await Task
-            .find({userId: userId, completed: !hideCompleted})
+            .find({userId: userId, completed: !hideCompleted, title: {$regex: req.query.searchTitle, $options: 'i'}})
             .sort({dueDate: 1})
             .skip(rangeStart)
             .limit(rangeEnd - rangeStart);
         return res.send({tasks: tasks, totalCount: count});
     } else {
-        const count = await Task.countDocuments({userId: userId});
+        const count = await Task.countDocuments({
+            userId: userId,
+            title: {$regex: req.query.searchTitle, $options: 'i'}
+        });
         const tasks = await Task
-            .find({userId: userId})
+            .find({userId: userId, title: {$regex: req.query.searchTitle, $options: 'i'}})
             .sort({dueDate: 1})
             .skip(rangeStart)
             .limit(rangeEnd - rangeStart);

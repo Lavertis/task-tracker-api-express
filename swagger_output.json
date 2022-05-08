@@ -219,6 +219,11 @@
             "type": "string"
           },
           {
+            "name": "searchTitle",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "hideCompleted",
             "in": "query",
             "type": "string"
