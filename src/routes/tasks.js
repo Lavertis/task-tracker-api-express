@@ -7,9 +7,9 @@ tasksRouter.get('/auth/all', authenticated, async (req, res) => {
     // #swagger.tags = ["tasks"]
     const userId = req.userId;
 
-    let page = req.query.page;
-    let limit = req.query.limit;
-    if (!page || !limit) {
+    let rangeStart = req.query.rangeStart;
+    let rangeEnd = req.query.rangeEnd;
+    if (!rangeStart || !rangeEnd) {
         const tasks = await Task.find({userId: userId}).sort({dueDate: 1});
         return res.send(tasks);
     }
@@ -20,17 +20,17 @@ tasksRouter.get('/auth/all', authenticated, async (req, res) => {
         const tasks = await Task
             .find({userId: userId, completed: !hideCompleted})
             .sort({dueDate: 1})
-            .skip(limit * (page - 1))
-            .limit(limit);
+            .skip(rangeStart)
+            .limit(rangeEnd - rangeStart);
         return res.send({tasks: tasks, totalCount: count});
     } else {
         const count = await Task.countDocuments({userId: userId});
         const tasks = await Task
             .find({userId: userId})
             .sort({dueDate: 1})
-            .skip(limit * (page - 1))
-            .limit(limit);
-        return res.send({tasks: tasks, totalCount: count});
+            .skip(rangeStart)
+            .limit(rangeEnd - rangeStart);
+        return res.status(206).send({tasks: tasks, totalCount: count});
     }
 });
 
