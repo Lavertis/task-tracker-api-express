@@ -209,12 +209,12 @@
         "description": "",
         "parameters": [
           {
-            "name": "page",
+            "name": "rangeStart",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "limit",
+            "name": "rangeEnd",
             "in": "query",
             "type": "string"
           },
@@ -227,6 +227,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "206": {
+            "description": "Partial Content"
           },
           "401": {
             "description": "Unauthorized"
